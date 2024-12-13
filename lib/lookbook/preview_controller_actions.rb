@@ -15,14 +15,18 @@ module Lookbook
         @scenario_name = scenario.name
         @render_args = @preview.render_args(@scenario_name, params: params.permit!)
         template = @render_args[:template]
+        inline   = @render_args[:inline]
         locals = @render_args[:locals]
+
         opts = {}
+        
         opts[:layout] = nil
         opts[:assigns] = @render_args[:assigns] || {}
         opts[:locals] = locals if locals.present?
+        opts[:inline] = template if template.present?
 
         with_action_view_settings do
-          rendered = render_to_string(template, **opts)
+          rendered = template ? render_to_string(template, **opts) : render_to_string(**opts)
 
           if scenario.after_render_method.present?
             render_context = Store.new({

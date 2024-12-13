@@ -23,7 +23,7 @@ module Lookbook
         opts[:layout] = nil
         opts[:assigns] = @render_args[:assigns] || {}
         opts[:locals] = locals if locals.present?
-        opts[:inline] = template if template.present?
+        opts[:inline] = inline if template.present?
 
         with_action_view_settings do
           rendered = template ? render_to_string(template, **opts) : render_to_string(**opts)

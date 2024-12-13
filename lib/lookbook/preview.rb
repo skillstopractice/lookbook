@@ -6,6 +6,8 @@ module Lookbook
 
     def render(component = nil, **args, &block)
       case 
+      when component.respond_to?(:to_renderable)
+        component.to_renderable(self)
       when component.nil?
         {
           type: :view,
@@ -15,8 +17,6 @@ module Lookbook
           assigns: args[:assigns] || {},
           block: block
         }
-      when component.respond_to?(:to_renderable)
-        component.to_renderable(self)
       else
         {
           type: component.is_a?(String) ? :view : :component,
@@ -50,7 +50,7 @@ module Lookbook
         provided_params = params.slice(*scenario_params_names).to_h.symbolize_keys
         result = provided_params.empty? ? new.public_send(scenario) : new.public_send(scenario, **provided_params)
         result ||= {}
-        result[:template] = scenario_template_path(scenario) if result[:template].nil?
+        result[:template] = scenario_template_path(scenario) if result[:template].nil? && result[:inline].nil?
         @layout = nil unless defined?(@layout)
         result.merge(layout: @layout)
       end

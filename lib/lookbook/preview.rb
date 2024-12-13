@@ -5,7 +5,8 @@ module Lookbook
     extend PreviewAfterRender
 
     def render(component = nil, **args, &block)
-      if component.nil?
+      case 
+      when component.nil?
         {
           type: :view,
           template: args[:template] || Lookbook.config.preview_template,
@@ -14,6 +15,8 @@ module Lookbook
           assigns: args[:assigns] || {},
           block: block
         }
+      when component.respond_to?(:to_renderable)
+        component.to_renderable(self)
       else
         {
           type: component.is_a?(String) ? :view : :component,
